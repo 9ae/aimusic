@@ -1,9 +1,5 @@
 import sys
-from music21 import chord, metadata, stream, environment
-
-us = environment.UserSettings()
-us['musescoreDirectPNGPath'] = "/Applications/MuseScore 4.app/Contents/MacOS/mscore"
-us['musicxmlPath'] = "/Applications/MuseScore 4.app/Contents/MacOS/mscore"
+from helpers import sequence_to_music21_chords, create_and_show_music21_score
 
 class LSystem:
     """
@@ -79,69 +75,6 @@ class LSystem:
         self.output = self.axiom
 
 
-def l_system_to_music21_chords(chord_sequence):
-    """
-    Translate the L-system generated chord sequence into a list of music21 
-    chords.
-
-    Parameters:
-    - chord_sequence (str): The L-system generated chord sequence.
-
-    Returns:
-    - list of music21.chord.Chord: The corresponding chord progression in music21 format.
-    """
-    chord_dict = {
-        "c": ["C", "E-", "G"],  # Cmin
-        "C": ["C", "E", "G"],  # Cmaj
-        "D": ["D", "F#", "A"],  # Dmaj
-        "d": ["D", "F", "A"],  # Dmin
-        "E": ["E", "G#", "B"],  # Emaj
-        "e": ["E", "G", "B"],  # Emin
-        "F": ["F", "A", "C"],  # Fmaj
-        "f": ["F", "A-", "C"],  # Fmin
-        "G": ["G", "B", "D"],  # Gmaj
-        "g": ["G", "B-", "D"],  # Gmin
-        "A": ["A", "C#", "E"],  # Amaj
-        "a": ["A", "C", "E"],  # Amin
-        "B": ["B", "D#", "F#"],  # Bmaj
-        "b": ["B", "D", "F#"],  # Bmin
-    }
-    return [chord.Chord(chord_dict[chord_name]) for chord_name in
-            chord_sequence if chord_name in chord_dict]
-
-
-def create_and_show_music21_score(music21_chords):
-    """
-    Create and display a music score using the music21 library.
-
-    This function takes a list of music21 chord objects and creates a score
-    with them. It then displays this score. The score is titled "L-System Chord Progression".
-
-    Parameters:
-    - music21_chords (list): A list of music21 chord objects.
-    """
-
-    # Create a new music21 stream.Score object
-    score = stream.Score()
-
-    # Set the metadata for the score with a title
-    score.metadata = metadata.Metadata(title="L-System Chord Progression")
-
-    # Create a new music21 stream.Part object
-    part = stream.Part()
-
-    # Loop through each chord in the music21_chords list
-    for chord in music21_chords:
-        # Append each chord to the Part object
-        part.append(chord)
-
-    # Append the Part object containing chords to the Score object
-    score.append(part)
-
-    # Display the score
-    score.show()
-
-
 def main(start_key, n):
     """
     Main function to demonstrate the generation of chord progression using L-system.
@@ -150,26 +83,36 @@ def main(start_key, n):
     axiom = start_key
     rules = {
         "C": "CAE",
-        "D": "DBa",
-        "E": "EDA",
+        "D": "DBĞ",
+        "Ď": "ĎÂF", # D flat
+        "E": "EĎǍ",
+        "Ě": "ĚCG", # E flat
         "F": "FDA",
         "G": "GEB",
-        "A": "Abe",
-        "B": "Bed",
-        "c": "ge",
+        "Ğ": "ĞĚÂ", # G flat / F sharp
+        "A": "AĞĎ",
+        "Ǎ": "ǍCF", # A flat
+        "Â": "ÂGD", # A sharp / B flat
+        "B": "BǍĚ",
+        "c": "cae",
+        "ć": "ćfa", # c sharp
         "d": "dag",
         "e": "ebg",
+        "ě": "ěcf", # e flat / d sharp
         "f": "fca",
         "g": "gdb",
+        "ğ": "ğcf", # g flat/ f sharp
+        "ġ": "ġeb", # g sharp
         "a": "ace",
         "b": "bdf",
+        "â": "âcf", # a sharp / b flat
         }
 
     l_system = LSystem(axiom, rules)
 
     its = int(n)
     chord_sequence = l_system.iterate(its)
-    music21_chords = l_system_to_music21_chords(chord_sequence)
+    music21_chords = sequence_to_music21_chords(chord_sequence)
 
     create_and_show_music21_score(music21_chords)
 

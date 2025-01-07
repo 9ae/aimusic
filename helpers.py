@@ -19,6 +19,15 @@ CHORD_NOTES = {
         "a": ["A", "C", "E"],  # Amin
         "B": ["B", "D#", "F#"],  # Bmaj
         "b": ["B", "D", "F#"],  # Bmin
+        "Ď": ["D-", "F", "A-"],  # D flat maj
+        "Ě": ["E-", "G", "B-"],  # E flat maj
+        "Ğ": ["G-", "B-", "D-"],  # G flat maj
+        "Ǎ": ["A-", "C", "E-"],  # A flat maj
+        "ć": ["C#", "E", "G#"],  # C#min
+        "ě": ["E-", "G", "B-"],  # E flat min
+        "ğ": ["G-", "B", "D-"],  # G flat min
+        "ġ": ["G#", "B", "D#"],  # G sharp min
+        "â": ["A#", "C#", "E#"],  # A sharp min
     }
 
 def sequence_to_music21_chords(chord_sequence):
