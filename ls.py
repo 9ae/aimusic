@@ -19,9 +19,8 @@ CIRCLE = [
 MAJOR_KEYS = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']
 MINOR_KEYS = ['a', 'b-', 'b', 'c', 'd-', 'd', 'e-', 'e', 'f', 'g-', 'g', 'a-']
 
-def chords_order(key):
+def chords_order(key, is_major=True):
     chords = []
-    is_major = key.isupper()
     index = MAJOR_KEYS.index(key) if is_major else MINOR_KEYS.index(key)
     if is_major:
         new_order = MAJOR_KEYS[index:] + MAJOR_KEYS[:index]
@@ -53,7 +52,7 @@ class LSystem:
     based on initial axiom and production rules.
     """
 
-    def __init__(self, key, axiom):
+    def __init__(self, key):
         """
         Initialize the L-system with an axiom and production rules.
 
@@ -62,20 +61,21 @@ class LSystem:
         - rules (dict): A dictionary where keys are symbols and values are
             the corresponding replacement strings. For example, {"A": "ABC"}
         """
-        self.axiom = axiom
-        self.alphabet = chords_order(key)
+        is_major = key.isupper()
+        self.axiom = '1451' if is_major else '1637'
+        self.alphabet = chords_order(key, is_major)
         if len(self.alphabet) != 7:
             raise ValueError("Unable to generate chords for {0}".format(key))
         self.rules = {
-            "1": self.alphabet[0],
-            "2": self.alphabet[1],
-            "3": self.alphabet[2],
-            "4": self.alphabet[3],
-            "5": self.alphabet[4],
-            "6": self.alphabet[5],
-            "7": self.alphabet[6],
+            "1": "14",
+            "2": "25",
+            "3": "37",
+            "4": "45",
+            "5": "56",
+            "6": "67",
+            "7": "74",
         }
-        self.output = axiom
+        self.output = self.axiom
 
     def iterate(self, n=1):
         """
@@ -90,7 +90,8 @@ class LSystem:
         for i in range(n):
             next_output = self._iterate_once()
             self.output = next_output
-            print(f"Output after {i + 1} iteration(s): {self.output}")
+            # print(f"Output after {i + 1} iteration(s): {self.output}")
+        self._terminate()
         final_output = self.output
         self._reset_output()
         return final_output
@@ -116,6 +117,16 @@ class LSystem:
         - str: The transformed symbol or original symbol if no rules apply.
         """
         return self.rules.get(symbol, symbol)
+    
+    def _terminate(self):
+        chords = []
+        for symbol in self.output:
+            index = int(symbol) - 1
+            if index >= 0 and index < len(self.alphabet):
+                chords.append(self.alphabet[index])
+        if len(chords) > 0:
+            self.output = "".join(chords)
+
 
     def _reset_output(self):
         """Reset the output to the initial axiom."""
@@ -127,14 +138,14 @@ def main(start_key, n):
     Main function to demonstrate the generation of chord progression using L-system.
     """
 
-    l_system = LSystem(start_key, '145')
+    l_system = LSystem(start_key)
 
     its = int(n)
     chord_sequence = l_system.iterate(its)
     print("Chord sequence:", chord_sequence)
 
-    # music21_chords = sequence_to_music21_chords(chord_sequence)
-    # create_and_show_music21_score(music21_chords)
+    music21_chords = sequence_to_music21_chords(chord_sequence)
+    create_and_show_music21_score(music21_chords)
 
 
 if __name__ == "__main__":
