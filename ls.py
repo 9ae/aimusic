@@ -1,13 +1,59 @@
 import sys
 from helpers import sequence_to_music21_chords, create_and_show_music21_score
 
+CIRCLE = [
+    ("C", "a"),
+    ("C#", "a#"),
+    ("D", "b"),
+    ("D#", "c"),
+    ("E", "c#"),
+    ("F", "d"),
+    ("F#", "d#"),
+    ("G", "e"),
+    ("G#", "f"),
+    ("A", "f#"),
+    ("A#", "g"),
+    ("B", "g#")
+]
+
+MAJOR_KEYS = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']
+MINOR_KEYS = ['a', 'b-', 'b', 'c', 'd-', 'd', 'e-', 'e', 'f', 'g-', 'g', 'a-']
+
+def chords_order(key):
+    chords = []
+    is_major = key.isupper()
+    index = MAJOR_KEYS.index(key) if is_major else MINOR_KEYS.index(key)
+    if is_major:
+        new_order = MAJOR_KEYS[index:] + MAJOR_KEYS[:index]
+        chords = [
+            new_order[0], # I
+            new_order[2].lower(), # ii
+            new_order[4].lower(), # iii
+            new_order[5], # IV
+            new_order[7], # V
+            new_order[9].lower(), # vi
+            new_order[11].lower(), # vii
+            ]
+    else:
+        new_order = MINOR_KEYS[index:] + MINOR_KEYS[:index]
+        chords = [
+            new_order[0], # i
+            new_order[2], # ii
+            new_order[3].upper(), # III
+            new_order[5], # iv
+            new_order[7], # v
+            new_order[8].upper(), # VI
+            new_order[10].upper(), # VII
+        ]
+    return chords
+
 class LSystem:
     """
     A basic L-system class that provides functionality for generating sequences
     based on initial axiom and production rules.
     """
 
-    def __init__(self, axiom, rules):
+    def __init__(self, key, axiom):
         """
         Initialize the L-system with an axiom and production rules.
 
@@ -17,18 +63,19 @@ class LSystem:
             the corresponding replacement strings. For example, {"A": "ABC"}
         """
         self.axiom = axiom
-        self.rules = rules
+        self.alphabet = chords_order(key)
+        if len(self.alphabet) != 7:
+            raise ValueError("Unable to generate chords for {0}".format(key))
+        self.rules = {
+            "1": self.alphabet[0],
+            "2": self.alphabet[1],
+            "3": self.alphabet[2],
+            "4": self.alphabet[3],
+            "5": self.alphabet[4],
+            "6": self.alphabet[5],
+            "7": self.alphabet[6],
+        }
         self.output = axiom
-
-    @property
-    def alphabet(self):
-        """
-        Get the alphabet of the L-system.
-
-        Returns:
-        - set: The alphabet of the L-system.
-        """
-        return set(self.axiom + "".join(self.rules.values()))
 
     def iterate(self, n=1):
         """
@@ -79,42 +126,15 @@ def main(start_key, n):
     """
     Main function to demonstrate the generation of chord progression using L-system.
     """
-    # Axiom: A
-    axiom = start_key
-    rules = {
-        "C": "CAE",
-        "D": "DBĞ",
-        "Ď": "ĎÂF", # D flat
-        "E": "EĎǍ",
-        "Ě": "ĚCG", # E flat
-        "F": "FDA",
-        "G": "GEB",
-        "Ğ": "ĞĚÂ", # G flat / F sharp
-        "A": "AĞĎ",
-        "Ǎ": "ǍCF", # A flat
-        "Â": "ÂGD", # A sharp / B flat
-        "B": "BǍĚ",
-        "c": "cae",
-        "ć": "ćfa", # c sharp
-        "d": "dag",
-        "e": "ebg",
-        "ě": "ěcf", # e flat / d sharp
-        "f": "fca",
-        "g": "gdb",
-        "ğ": "ğcf", # g flat/ f sharp
-        "ġ": "ġeb", # g sharp
-        "a": "ace",
-        "b": "bdf",
-        "â": "âcf", # a sharp / b flat
-        }
 
-    l_system = LSystem(axiom, rules)
+    l_system = LSystem(start_key, '145')
 
     its = int(n)
     chord_sequence = l_system.iterate(its)
-    music21_chords = sequence_to_music21_chords(chord_sequence)
+    print("Chord sequence:", chord_sequence)
 
-    create_and_show_music21_score(music21_chords)
+    # music21_chords = sequence_to_music21_chords(chord_sequence)
+    # create_and_show_music21_score(music21_chords)
 
 
 if __name__ == "__main__":

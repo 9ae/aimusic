@@ -1,3 +1,4 @@
+import re
 from music21 import chord, metadata, stream, environment
 
 us = environment.UserSettings()
@@ -19,16 +20,19 @@ CHORD_NOTES = {
         "a": ["A", "C", "E"],  # Amin
         "B": ["B", "D#", "F#"],  # Bmaj
         "b": ["B", "D", "F#"],  # Bmin
-        "Ď": ["D-", "F", "A-"],  # D flat maj
-        "Ě": ["E-", "G", "B-"],  # E flat maj
-        "Ğ": ["G-", "B-", "D-"],  # G flat maj
-        "Ǎ": ["A-", "C", "E-"],  # A flat maj
-        "ć": ["C#", "E", "G#"],  # C#min
-        "ě": ["E-", "G", "B-"],  # E flat min
-        "ğ": ["G-", "B", "D-"],  # G flat min
-        "ġ": ["G#", "B", "D#"],  # G sharp min
-        "â": ["A#", "C#", "E#"],  # A sharp min
+        "D-": ["D-", "F", "A-"],  # D flat maj
+        "E-": ["E-", "G", "B-"],  # E flat maj
+        "G-": ["G-", "B-", "D-"],  # G flat maj
+        "A-": ["A-", "C", "E-"],  # A flat maj
+        "c#": ["C#", "E", "G#"],  # C#min
+        "e-": ["E-", "G", "B-"],  # E flat min
+        "g-": ["G-", "B", "D-"],  # G flat min
+        "g#": ["G#", "B", "D#"],  # G sharp min
+        "a#": ["A#", "C#", "E#"],  # A sharp min
     }
+
+def sequence_to_music21_notation(chord_sequence):
+    return re.findall(r"[a-gA-G][#-]?", chord_sequence)
 
 def sequence_to_music21_chords(chord_sequence):
     """
@@ -41,8 +45,9 @@ def sequence_to_music21_chords(chord_sequence):
     Returns:
     - list of music21.chord.Chord: The corresponding chord progression in music21 format.
     """
+    chords = sequence_to_music21_notation(chord_sequence)
     return [chord.Chord(CHORD_NOTES[chord_name]) for chord_name in
-            chord_sequence if chord_name in CHORD_NOTES]
+            chords if chord_name in CHORD_NOTES]
 
 
 def create_and_show_music21_score(music21_chords):
@@ -75,3 +80,12 @@ def create_and_show_music21_score(music21_chords):
 
     # Display the score
     score.show()
+
+def rotate(li, key):
+    try:
+        i = li.index(key)
+        return li[i:] + li[:i]
+    except ValueError:
+        print(f"Key {key} not found in list {li}")
+        return li
+
