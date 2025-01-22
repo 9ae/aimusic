@@ -1,23 +1,5 @@
 import sys
-from helpers import sequence_to_music21_chords, create_and_show_music21_score
-
-CIRCLE = [
-    ("C", "a"),
-    ("C#", "a#"),
-    ("D", "b"),
-    ("D#", "c"),
-    ("E", "c#"),
-    ("F", "d"),
-    ("F#", "d#"),
-    ("G", "e"),
-    ("G#", "f"),
-    ("A", "f#"),
-    ("A#", "g"),
-    ("B", "g#")
-]
-
-MAJOR_KEYS = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']
-MINOR_KEYS = ['a', 'b-', 'b', 'c', 'd-', 'd', 'e-', 'e', 'f', 'g-', 'g', 'a-']
+from helpers import sequence_to_music21_chords, create_and_show_music21_score, MAJOR_KEYS, MINOR_KEYS
 
 def chords_order(key, is_major=True):
     chords = []

@@ -1,9 +1,28 @@
 import re
-from music21 import chord, metadata, stream, environment
+import os
+from music21 import chord, metadata, stream, environment, midi
 
 us = environment.UserSettings()
 us['musescoreDirectPNGPath'] = "/Applications/MuseScore 4.app/Contents/MacOS/mscore"
 us['musicxmlPath'] = "/Applications/MuseScore 4.app/Contents/MacOS/mscore"
+
+MAJOR_KEYS = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']
+MINOR_KEYS = ['a', 'b-', 'b', 'c', 'd-', 'd', 'e-', 'e', 'f', 'g-', 'g', 'a-']
+
+CIRCLE = [
+    ("C", "a"),
+    ("C#", "a#"),
+    ("D", "b"),
+    ("D#", "c"),
+    ("E", "c#"),
+    ("F", "d"),
+    ("F#", "d#"),
+    ("G", "e"),
+    ("G#", "f"),
+    ("A", "f#"),
+    ("A#", "g"),
+    ("B", "g#")
+]
 
 CHORD_NOTES = {
         "c": ["C", "E-", "G"],  # Cmin
@@ -89,3 +108,14 @@ def rotate(li, key):
         print(f"Key {key} not found in list {li}")
         return li
 
+def read_midi(file_path):
+    mf = midi.MidiFile()
+    mf.open(file_path)
+    mf.read()
+    mf.close()
+    s = midi.translate.midiFileToStream(mf)
+    t1 = s.parts[0]
+    for m in t1.iter():
+        for n in m.notes:
+            print(n)
+    
